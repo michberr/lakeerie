@@ -61,7 +61,7 @@ plot_theme <- theme(
 
 
 # Makes a barplot of all bacterial phyla
-phylum_barplot<- function(df){
+phylum_barplot <- function(df){
   ggplot(df, aes(x = Phylum, y = Abundance, fill = Phylum )) + 
     geom_bar(stat = "identity", alpha = 0.6) +
     scale_y_continuous(limits = c(0, 0.5)) +
@@ -87,17 +87,34 @@ cyano_barplot <- function(df){
     scale_y_continuous(limits = c(0, 0.16)) +
     geom_bar(stat = "identity", alpha = 0.6) +
     scale_fill_brewer(type = "qual", palette = "Set2") +
-    scale_x_discrete(labels = c(Anabaena = "A",
-                                Microcystis = "M",  
-                                Pseudanabaena = "Ps", 
-                                Synechococcus = "S",
-                                unclassified = "U")
-    ) +
+    scale_x_discrete(labels = c(
+      Anabaena = "A",
+      Microcystis = "M",  
+      Pseudanabaena = "Ps", 
+      Synechococcus = "S",
+      unclassified = "U"
+    )
+) +
     plot_theme +
     xlab("") +
     ylab("Relative Abundance\n")
 }
 
+
+makeToxinPlot <- function(date){
+  Full %>% 
+      ggvis(~Date, ~ParMC) %>%
+      group_by(Station) %>%
+      layer_lines() %>%
+      layer_points(fill := "white", stroke := "grey", fillOpacity := .2, shape = ~Station) %>%
+      filter(Date == date) %>%
+      layer_points(fill := "red", fillOpacity := .2, shape = ~Station) %>%
+      add_axis("y", title = "Toxin (ug/L)") %>%
+      add_axis("x", title_offset = 40, properties = axis_props(
+        labels = list(angle = 315, align = "right", fontSize = 12)
+      )) %>%
+      set_options(width = 420, height = 220) 
+}
 
 
 
@@ -106,9 +123,9 @@ cyano_barplot <- function(df){
 # Makes a leaflet map of the three sampling locations
 map <- leaflet() %>%
   addTiles() %>%  # Add default OpenStreetMap map tiles
-  addMarkers(lat = 41.7621666, lng= -83.33, popup = "WE2") %>%
-  addMarkers(lat = 41.82666, lng= -83.193, popup = "WE4") %>%
-  addMarkers(lat = 41.703166, lng= -83.25433, popup = "WE12 (Toledo)") %>%
+  addMarkers(lat = 41.7621666, lng = -83.33, popup = "WE2") %>%
+  addMarkers(lat = 41.82666, lng = -83.193, popup = "WE4") %>%
+  addMarkers(lat = 41.703166, lng = -83.25433, popup = "WE12 (Toledo)") %>%
   setView(zoom = 9, lat = 41.7621666, lng = -83.25433) 
 
 
